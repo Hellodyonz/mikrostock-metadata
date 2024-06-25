@@ -59,12 +59,26 @@ function App() {
               { label: 'Title', key: 'Title' },
               { label: 'Keywords', key: 'Keywords' }
             ]}
-            filename="metadata.csv"
+            filename="metadatafreepik.csv"
             className="btn btn-secondary mx-5"
             separator=';'
             quoteStrings={false}
           >
             Ekspor CSV
+          </CSVLink>
+          <CSVLink
+            data={prepareExportData()}
+            headers={[
+              { label: 'File name', key: 'File name' },
+              { label: 'Title', key: 'Title' },
+              { label: 'Keywords', key: 'Keywords' }
+            ]}
+            filename="metadataadobe.csv"
+            className="btn btn-secondary mx-5"
+            separator=','
+            quoteStrings={true}
+          >
+            Ekspor CSV Adobe
           </CSVLink>
         </div>
 
