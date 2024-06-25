@@ -1,12 +1,42 @@
 import React, { useState } from 'react';
+import { CSVLink } from 'react-csv';
 import './style/App.css';
 
 function App() {
   const [files, setFiles] = useState([]);
+  const [metadata, setMetadata] = useState({});
 
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files).filter(file => file.type === 'image/jpeg');
     setFiles(selectedFiles);
+    // Reset metadata when files change
+    setMetadata({});
+  };
+
+  const handleInputChange = (index, field, value) => {
+    setMetadata(prevMetadata => ({
+      ...prevMetadata,
+      [index]: {
+        ...prevMetadata[index],
+        [field]: value
+      }
+    }));
+  };
+
+  const prepareExportData = () => {
+    const exportData = [];
+    
+    files.forEach((file, index) => {
+      const fileNameTrimmed = file.name.trim().replace(/\s+/g, '');
+      const rowData = {
+        'File name': fileNameTrimmed,
+        'Title': metadata[index]?.description,
+        'Keywords': metadata[index]?.tags
+      };
+      exportData.push(rowData);
+    });
+    
+    return exportData;
   };
 
   return (
@@ -22,7 +52,20 @@ function App() {
             onChange={handleFileChange}
             className="btn"
           />
-          <button className="btn btn-secondary mx-5">Ekspor CSV</button>
+          <CSVLink
+            data={prepareExportData()}
+            headers={[
+              { label: 'File name', key: 'File name' },
+              { label: 'Title', key: 'Title' },
+              { label: 'Keywords', key: 'Keywords' }
+            ]}
+            filename="metadata.csv"
+            className="btn btn-secondary mx-5"
+            separator=';'
+            quoteStrings={false}
+          >
+            Ekspor CSV
+          </CSVLink>
         </div>
 
         <div className="main-content mx-2 mt-4">
@@ -43,16 +86,27 @@ function App() {
                     <img src={URL.createObjectURL(file)} alt="Preview" width="100" />
                   </td>
                   <td className='align-middle text-center'>
-                    <p>{file.name}</p>
+                    <p>{file.name.trim().replace(/\s+/g, '')}</p>
                   </td>
-                  <td className='py-3'>
+                  <td className='py-3' colSpan={2}>
                     <div className='w-100'>
                       <p className='mb-2'>Description</p>
-                      <input className='w-100' type="text" />
+                      <input
+                        className='w-100'
+                        type="text"
+                        value={metadata[index]?.description || ''}
+                        onChange={(e) => handleInputChange(index, 'description', e.target.value)}
+                      />
                     </div>
                     <div className='w-100'>
-                      <p className='mb-2 mt-3'>Tags</p>
-                      <textarea></textarea>
+                      <div className='d-flex'>
+                        <p className='mb-2 mt-3'>Tags</p>
+                      </div>
+                      <textarea
+                        className='w-100'
+                        value={metadata[index]?.tags || ''}
+                        onChange={(e) => handleInputChange(index, 'tags', e.target.value)}
+                      />
                     </div>
                   </td>
                 </tr>

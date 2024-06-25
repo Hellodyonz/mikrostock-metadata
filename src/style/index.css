@@ -1,9 +1,5 @@
 
 
-body {
-  background-color: red;
-}
-
 .head-content {
   background-color: rgb(88, 88, 88);
   border: 0.2px solid rgb(147, 147, 147);
@@ -11,4 +7,16 @@ body {
 
 .head-content col {
   border: 1px solid white;
+}
+
+.text-jumlah {
+  color: rgb(152, 152, 152);
+}
+
+.label {
+  padding: 5px 16px;
+  background-color: rgb(85, 85, 85);
+  border-radius: 15px;
+  width: fit-content;
+  font-size: 12px;
 }
