@@ -1,0 +1,28 @@
+h1,h2,h3,h4,h5,h6,p{
+  color: white;
+  margin-bottom: 0px;
+}
+
+.main {
+  padding-bottom: 1000px;
+}
+.main-content input,.main-content textarea {
+  background-color: rgb(72, 72, 72);
+  border: none;
+  width: 30%;
+  color: white;
+  width: 100%;
+}
+
+textarea {
+  height: 200px;
+  height: 60px;
+}
+
+.head-content h5 {
+  padding: 10px;
+}
+
+.item-content p {
+  padding: 10px 0px;
+}

@@ -1,0 +1,14 @@
+
+
+body {
+  background-color: red;
+}
+
+.head-content {
+  background-color: rgb(88, 88, 88);
+  border: 0.2px solid rgb(147, 147, 147);
+}
+
+.head-content col {
+  border: 1px solid white;
+}
