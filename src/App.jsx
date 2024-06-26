@@ -9,7 +9,6 @@ function App() {
   const handleFileChange = (event) => {
     const selectedFiles = Array.from(event.target.files).filter(file => file.type === 'image/jpeg');
     setFiles(selectedFiles);
-    // Reset metadata when files change
     setMetadata({});
   };
 
@@ -39,6 +38,79 @@ function App() {
     return exportData;
   };
 
+  const downloadCSVFiles = () => {
+    const exportData = prepareExportData();
+
+    // Configurations for different CSV files
+    const csvFreepik = {
+      data: exportData,
+      headers: [
+        { label: 'File name', key: 'File name' },
+        { label: 'Title', key: 'Title' },
+        { label: 'Keywords', key: 'Keywords' }
+      ],
+      separator: ';',
+      filename: 'metadatafreepik.csv',
+    };
+
+    const csvAdobe = {
+      data: exportData,
+      headers: [
+        { label: 'File name', key: 'File name' },
+        { label: 'Title', key: 'Title' },
+        { label: 'Keywords', key: 'Keywords' }
+      ],
+      separator: ',',
+      filename: 'metadataadobe.csv',
+    };
+    const csvVectezy = {
+      data: exportData,
+      headers: [
+        { label: 'Filename', key: 'File name' },
+        { label: 'Title', key: 'Title' },
+        { label: 'Description', key: 'Title' },
+        { label: 'Keywords', key: 'Keywords' }
+      ],
+      separator: ',',
+      quoteStrings:'true',
+      filename: 'metadatavectezy.csv',
+    };
+    const csvSS = {
+      data: exportData,
+      headers: [
+        { label: 'Filename', key: 'File name' },
+        { label: 'Description', key: 'Title' },
+        { label: 'Keywords', key: 'Keywords' },
+        { label: 'Categories', key: '' }
+      ],
+      separator: ';',
+      quoteStrings:'true',
+      filename: 'metadataSS.csv',
+    };
+
+    // Function to create CSV and download
+    const createAndDownloadCSV = ({ data, headers, separator, filename }) => {
+      const csvData = [
+        headers.map(header => header.label).join(separator),
+        ...data.map(row => headers.map(header => row[header.key]).join(separator))
+      ].join('\n');
+
+      const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.setAttribute('download', filename);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    };
+
+    // Download both CSV files
+    createAndDownloadCSV(csvFreepik);
+    createAndDownloadCSV(csvAdobe);
+    createAndDownloadCSV(csvVectezy);
+    createAndDownloadCSV(csvSS);
+  };
+
   return (
     <div className='main bg-dark'>
       <div className="container-fluid">
@@ -52,34 +124,12 @@ function App() {
             onChange={handleFileChange}
             className="btn"
           />
-          <CSVLink
-            data={prepareExportData()}
-            headers={[
-              { label: 'File name', key: 'File name' },
-              { label: 'Title', key: 'Title' },
-              { label: 'Keywords', key: 'Keywords' }
-            ]}
-            filename="metadatafreepik.csv"
+          <button
+            onClick={downloadCSVFiles}
             className="btn btn-secondary mx-5"
-            separator=';'
-            quoteStrings={false}
           >
             Ekspor CSV
-          </CSVLink>
-          <CSVLink
-            data={prepareExportData()}
-            headers={[
-              { label: 'File name', key: 'File name' },
-              { label: 'Title', key: 'Title' },
-              { label: 'Keywords', key: 'Keywords' }
-            ]}
-            filename="metadataadobe.csv"
-            className="btn btn-secondary mx-5"
-            separator=','
-            quoteStrings={true}
-          >
-            Ekspor CSV Adobe
-          </CSVLink>
+          </button>
         </div>
 
         <div className="main-content mx-2 mt-4">
