@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { CSVLink } from 'react-csv';
 import './style/App.css';
 
 function App() {
@@ -26,11 +25,13 @@ function App() {
     const exportData = [];
     
     files.forEach((file, index) => {
+      // Mengubah ekstensi file dari .jpg menjadi .eps
       const fileNameTrimmed = file.name.trim().replace(/\s+/g, '');
+      const fileNameWithEps = fileNameTrimmed.replace(/\.jpg$/, '.eps');
       const rowData = {
-        'File name': fileNameTrimmed,
-        'Title': metadata[index]?.description,
-        'Keywords': metadata[index]?.tags
+        'File name': fileNameWithEps,
+        'Title': (metadata[index]?.description || '').replace(/,/g, ''), // Remove commas from description
+        'Keywords': metadata[index]?.tags || '' // Keep commas in keywords
       };
       exportData.push(rowData);
     });
@@ -41,7 +42,6 @@ function App() {
   const downloadCSVFiles = () => {
     const exportData = prepareExportData();
 
-    // Configurations for different CSV files
     const csvFreepik = {
       data: exportData,
       headers: [
@@ -58,11 +58,14 @@ function App() {
       headers: [
         { label: 'File name', key: 'File name' },
         { label: 'Title', key: 'Title' },
-        { label: 'Keywords', key: 'Keywords' }
+        { label: 'Keywords', key: 'Keywords' },
+        { label: 'Category1', key: 'Category1' },
+        { label: 'Release', key: 'Release' }
       ],
       separator: ',',
       filename: 'metadataadobe.csv',
     };
+
     const csvVectezy = {
       data: exportData,
       headers: [
@@ -72,9 +75,10 @@ function App() {
         { label: 'Keywords', key: 'Keywords' }
       ],
       separator: ',',
-      quoteStrings:'true',
+      quoteStrings: 'true',
       filename: 'metadatavectezy.csv',
     };
+
     const csvSS = {
       data: exportData,
       headers: [
@@ -83,16 +87,18 @@ function App() {
         { label: 'Keywords', key: 'Keywords' },
         { label: 'Categories', key: '' }
       ],
-      separator: ';',
-      quoteStrings:'true',
+      separator: ',',
+      quoteStrings: 'true',
       filename: 'metadataSS.csv',
     };
 
-    // Function to create CSV and download
     const createAndDownloadCSV = ({ data, headers, separator, filename }) => {
       const csvData = [
         headers.map(header => header.label).join(separator),
-        ...data.map(row => headers.map(header => row[header.key]).join(separator))
+        ...data.map(row => headers.map(header => {
+          const value = row[header.key];
+          return (header.key === 'Title' || header.key === 'Keywords') ? `"${value}"` : value;
+        }).join(separator))
       ].join('\n');
 
       const blob = new Blob([csvData], { type: 'text/csv;charset=utf-8;' });
@@ -104,7 +110,6 @@ function App() {
       document.body.removeChild(link);
     };
 
-    // Download both CSV files
     createAndDownloadCSV(csvFreepik);
     createAndDownloadCSV(csvAdobe);
     createAndDownloadCSV(csvVectezy);
